@@ -11,6 +11,7 @@ let app = express() // Inicializando o servidor # ENXERGUE APP COMO UM SERVIDOR
 let porta = 3000 // Porta do servidor
 
 app.use(cors()) 
+app.use(express.json());
 
 // Banco de dados
 let produtos = [
@@ -63,6 +64,62 @@ app.get("/produtos/preco_max/:preco", (req, res) => {
 app.listen(porta, () => {
     console.log(`Servidor rodando em http://127.0.0.1:${porta}`)
 })
+
+app.post("/produtos", (req, res) => {
+    let nome = req.body.nome;
+    let preco = req.body.preco;
+
+    let novo_id = 0;
+    for(prod of produtos){
+        novo_id = prod.id
+    }
+    novo_id++
+
+    let novo_produto = { id: novo_id, nome: nome, preco: preco}
+    produtos.push(novo_produto)
+
+    res.send("Produto alterado com sucesso",  novo_produto )
+})
+
+//CRIAR ROTA PUT /PRODUTO/:ID
+
+app.put("/produto/:id", (req, res) => {
+    let id = req.params.id;
+    let nome = req.body.nome;
+    let preco = req.body.preco;
+    
+    // let prod = null;
+    // for(let p of produtos){
+    //     if(p.id == id){
+    //         prod = p;
+    //         break
+    //     }
+    // }
+
+    let p = produtos.find( p => p.id == id)
+
+    if ( p == undefined){
+        res.send({mensagem: "Produto não encontrado"})
+        return
+    }
+    p.nome = nome;
+    p.preco = preco;
+    res.send(p)
+})
+
+//CRIAR ROTA DELETE /PRODUTO/:ID
+
+app.delete("/produto/:id", (req, res) => {
+    let id = req.params.id;
+
+    let index = produtos.findIndex(p => p.id == id)
+    if (index == undefined){
+        res.send({mensagem: "Produto não encontrado!"})
+        return
+    }
+    produtos.splice(index, 1)
+    res.send({mensagem: "Produto deletado!"})
+}) 
 
 // ctrl + c = close servidor
 

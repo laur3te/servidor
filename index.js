@@ -5,6 +5,8 @@
 
 let express = require("express")
 let cors = require("cors") // Importando bibliotecas
+let multer =  require("multer")
+let path = require("path")
 
 // Configurando o servidor
 let app = express() // Inicializando o servidor # ENXERGUE APP COMO UM SERVIDOR
@@ -12,17 +14,38 @@ let porta = 3000 // Porta do servidor
 
 app.use(cors()) 
 app.use(express.json());
+app.use("/fotos", express.static(path.join(__dirname,"fotos"))) // Para acessar as fotos
 
 // Banco de dados
 let produtos = [
-    {id: 1, nome: "Mouse", preco: 49.59},
-    {id: 2, nome: "Teclado", preco: 109.90},
-    {id: 3, nome: "Monitor", preco: 399.90}, 
-    {id: 4, nome: "Microfone", preco: 219.00},
-    {id: 5, nome: "Cadeira", preco: 539.80},
-    {id: 6, nome: "Mesa", preco: 299.70},
-    {id: 7, nome: "Fone", preco: 99.99}
+    {id: 1, nome: "Mouse", preco: 49.59, foto: "1.jpeg"},
+    {id: 2, nome: "Teclado", preco: 109.90, foto: "2.jpeg"},
+    {id: 3, nome: "Monitor", preco: 399.90, foto: "3.jpeg"}, 
 ]
+
+// upload / Multer
+let storage_func = multer.diskStorage({ //Armazenamento por disco
+    destination: (req, file, cb) => { // Cb = callback (função que será chamada quando o arquivo for salvo)
+        cb(null, "fotos/") // Por onde vai salvar
+    }, 
+    filename: (req, file, cb) => {
+        let novo_id = pega_proximo_id();
+        let novo_nome = novo_id + path.extname(file.originalname);
+        cb(null, novo_nome);
+    }
+})
+
+let upload = multer({ storage: storage_func }); //Definindo como será o armaz. do arquivo enviado
+
+function pega_proximo_id(){
+    let novo_id = 0
+    for (prod of produtos) {
+        novo_id = prod.id;
+    }
+    novo_id++;
+    return novo_id;
+}
+
 // Configurando a rota
 app.get("/", (req, res) => res.send("Rota inicial")) // Função simplificada 
 // req = requisição; res = resposta; send = envia; "/" = caminho do servidor ( barra = home )
@@ -65,9 +88,13 @@ app.listen(porta, () => {
     console.log(`Servidor rodando em http://127.0.0.1:${porta}`)
 })
 
-app.post("/produtos", (req, res) => {
+// middleware -> função que é executada antes de uma rota
+app.post("/produtos", upload.single("foto"), (req, res) => {
     let nome = req.body.nome;
     let preco = req.body.preco;
+    let foto = req.file.filename;
+
+    console.log( req.file)
 
     let novo_id = 0;
     for(prod of produtos){
@@ -75,7 +102,7 @@ app.post("/produtos", (req, res) => {
     }
     novo_id++
 
-    let novo_produto = { id: novo_id, nome: nome, preco: preco}
+    let novo_produto = { id: novo_id, nome: nome, preco: preco, foto: foto}
     produtos.push(novo_produto)
 
     res.send("Produto alterado com sucesso",  novo_produto )

@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "nome": "Mouse",
+    "preco": 49.59,
+    "foto": "1.jpeg"
+  },
+  {
+    "id": 2,
+    "nome": "Teclado",
+    "preco": 109.9,
+    "foto": "2.jpeg"
+  },
+  {
+    "id": 3,
+    "nome": "Monitor",
+    "preco": 399.9,
+    "foto": "3.jpeg"
+  },
+  {
+    "id": 4,
+    "nome": "Arma do Tabilã",
+    "preco": "2580.96",
+    "foto": "4.webp"
+  },
+  {
+    "id": 5,
+    "nome": "Galinha de macumba ",
+    "preco": "20.98",
+    "foto": "5.jpg"
+  },
+  {
+    "id": 6,
+    "nome": "Casquinha de sorvete ",
+    "preco": "7.50",
+    "foto": "6.jpg"
+  }
+]

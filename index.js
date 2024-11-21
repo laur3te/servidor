@@ -1,5 +1,3 @@
-// npm init 
-// npm install express cors
 // express - biblioteca que permite que você crie um servidor node
 // cors - 
 
@@ -7,6 +5,7 @@ let express = require("express")
 let cors = require("cors") // Importando bibliotecas
 let multer =  require("multer")
 let path = require("path")
+let fs = require("fs") // Fyle  System
 
 // Configurando o servidor
 let app = express() // Inicializando o servidor # ENXERGUE APP COMO UM SERVIDOR
@@ -17,11 +16,16 @@ app.use(express.json());
 app.use("/fotos", express.static(path.join(__dirname,"fotos"))) // Para acessar as fotos
 
 // Banco de dados
-let produtos = [
-    {id: 1, nome: "Mouse", preco: 49.59, foto: "1.jpeg"},
-    {id: 2, nome: "Teclado", preco: 109.90, foto: "2.jpeg"},
-    {id: 3, nome: "Monitor", preco: 399.90, foto: "3.jpeg"}, 
-]
+// let produtos = [
+//     {id: 1, nome: "Mouse", preco: 49.59, foto: "1.jpeg"},
+//     {id: 2, nome: "Teclado", preco: 109.90, foto: "2.jpeg"},
+//     {id: 3, nome: "Monitor", preco: 399.90, foto: "3.jpeg"}, 
+// ]
+
+let arq = fs.readFileSync("bd.json", { encoding: "utf-8" }) //Abrir formato de texto;
+
+let produtos = JSON.parse(arq) // Converte um texto em JSON, se aplicável
+console.log(/*typeof*/ produtos); // String
 
 // upload / Multer
 let storage_func = multer.diskStorage({ //Armazenamento por disco
@@ -104,6 +108,10 @@ app.post("/produtos", upload.single("foto"), (req, res) => {
 
     let novo_produto = { id: novo_id, nome: nome, preco: preco, foto: foto}
     produtos.push(novo_produto)
+
+    let str_json = JSON.stringify(produtos, null, 2) // Converte um JSON em texto
+    fs.writeFileSync("bd.json", str_json) // Salva o texto no arquivo
+
 
     res.send("Produto alterado com sucesso",  novo_produto )
 })

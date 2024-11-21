@@ -94,7 +94,7 @@ app.post("/produtos", upload.single("foto"), (req, res) => {
     let preco = req.body.preco;
     let foto = req.file.filename;
 
-    console.log( req.file)
+    console.log(req.file)
 
     let novo_id = 0;
     for(prod of produtos){
